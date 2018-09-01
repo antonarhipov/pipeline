@@ -1,4 +1,8 @@
 import jetbrains.buildServer.configs.kotlin.v2018_1.*
+import jetbrains.buildServer.configs.kotlin.v2018_1.buildFeatures.merge
+import jetbrains.buildServer.configs.kotlin.v2018_1.buildSteps.maven
+import jetbrains.buildServer.configs.kotlin.v2018_1.buildSteps.script
+import jetbrains.buildServer.configs.kotlin.v2018_1.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2018_1.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2018_1.vcs.GitVcsRoot
 
@@ -29,8 +33,10 @@ version = "2018.1"
 project {
 
     vcsRoot(ApplicationVcs)
+    vcsRoot(ExtTestsVcs)
     vcsRoot(LibraryVcs)
-    vcsRoot(Pipeline)
+    vcsRoot(IntegrationTestsVcs)
+    vcsRoot(UiTestsVcs)
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 
     subProject(Live)
@@ -40,28 +46,62 @@ project {
 
 object ApplicationVcs : GitVcsRoot({
     name = "ApplicationVcs"
-    url = "https://github.com/antonarhipov/nanoservice"
+    url = "http://localhost:3000/anton/application.git"
+    branchSpec = """
+        +:refs/heads/(master)
+        +:refs/heads/(feature*)
+    """.trimIndent()
     authMethod = password {
         userName = "antonarhipov"
         password = "credentialsJSON:372bd256-7c6f-4a5b-ac95-a9b4d3505dd2"
     }
 })
 
-object LibraryVcs : GitVcsRoot({
-    name = "LibraryVcs"
-    url = "https://github.com/antonarhipov/common"
+object ExtTestsVcs : GitVcsRoot({
+    name = "ExtTestsVcs"
+    url = "http://localhost:3000/anton/extra-tests.git"
+    branchSpec = """
+        +:refs/heads/(master)
+        +:refs/heads/(feature*)
+    """.trimIndent()
+})
+
+object IntegrationTestsVcs : GitVcsRoot({
+    name = "IntegrationTestsVcs"
+    url = "http://localhost:3000/anton/integration-tests.git"
+    branchSpec = """
+        +:refs/heads/(master)
+        +:refs/heads/(feature*)
+    """.trimIndent()
     authMethod = password {
-        userName = "antonarhipov"
-        password = "credentialsJSON:22dd1f8f-17b2-46af-bc46-38ef2f6955d3"
+        userName = "anton"
+        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
     }
 })
 
-object Pipeline : GitVcsRoot({
-    name = "Pipeline"
-    url = "https://github.com/antonarhipov/tt-pipeline"
+object LibraryVcs : GitVcsRoot({
+    name = "LibraryVcs"
+    url = "http://localhost:3000/anton/library.git"
+    branchSpec = """
+        +:refs/heads/(master)
+        +:refs/heads/(feature*)
+    """.trimIndent()
     authMethod = password {
-        userName = "antonarhipov"
-        password = "credentialsJSON:22dd1f8f-17b2-46af-bc46-38ef2f6955d3"
+        userName = "anton"
+        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
+    }
+})
+
+object UiTestsVcs : GitVcsRoot({
+    name = "UiTestsVcs"
+    url = "http://localhost:3000/anton/ui-tests.git"
+    branchSpec = """
+        +:refs/heads/(master)
+        +:refs/heads/(feature*)
+    """.trimIndent()
+    authMethod = password {
+        userName = "anton"
+        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
     }
 })
 
@@ -71,22 +111,41 @@ object Development : Project({
 
     buildType(TestUI)
     buildType(TestReport)
+    buildType(TestInt)
     buildType(Application)
     buildType(TestExt)
-    buildType(TestOps)
     buildType(Library)
-    buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestOps, TestReport)
+    buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 })
 
 object Application : BuildType({
     name = "Application"
 
+    artifactRules = """
+        application-*.jar
+        target/application-1.0-SNAPSHOT.jar
+    """.trimIndent()
+
     vcs {
         root(ApplicationVcs)
     }
 
+    steps {
+        maven {
+            goals = "clean package"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            mavenVersion = defaultProvidedVersion()
+        }
+    }
+
     dependencies {
-        snapshot(Library) {
+        dependency(Library) {
+            snapshot {
+            }
+
+            artifacts {
+                artifactRules = "library-*.jar"
+            }
         }
     }
 })
@@ -94,25 +153,77 @@ object Application : BuildType({
 object Library : BuildType({
     name = "Library"
 
+    artifactRules = "target/library-*.jar"
+
     vcs {
         root(LibraryVcs)
+    }
+
+    steps {
+        maven {
+            goals = "clean package"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            mavenVersion = defaultProvidedVersion()
+        }
+    }
+
+    features {
+        merge {
+            branchFilter = "+:feature*"
+        }
     }
 })
 
 object TestExt : BuildType({
     name = "TestExt"
 
+    vcs {
+        root(ExtTestsVcs)
+    }
+
+    steps {
+        maven {
+            goals = "clean test"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            mavenVersion = defaultProvidedVersion()
+        }
+    }
+
     dependencies {
-        snapshot(Application) {
+        dependency(Application) {
+            snapshot {
+            }
+
+            artifacts {
+                artifactRules = "application-*.jar"
+            }
         }
     }
 })
 
-object TestOps : BuildType({
-    name = "TestOps"
+object TestInt : BuildType({
+    name = "TestInt"
+
+    vcs {
+        root(IntegrationTestsVcs)
+    }
+
+    steps {
+        maven {
+            goals = "clean test"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            mavenVersion = defaultProvidedVersion()
+        }
+    }
 
     dependencies {
-        snapshot(Application) {
+        dependency(Application) {
+            snapshot {
+            }
+
+            artifacts {
+                artifactRules = "application-*.jar"
+            }
         }
     }
 })
@@ -136,7 +247,7 @@ object TestReport : BuildType({
     dependencies {
         snapshot(TestExt) {
         }
-        snapshot(TestOps) {
+        snapshot(TestInt) {
         }
         snapshot(TestUI) {
         }
@@ -146,8 +257,26 @@ object TestReport : BuildType({
 object TestUI : BuildType({
     name = "TestUI"
 
+    vcs {
+        root(UiTestsVcs)
+    }
+
+    steps {
+        maven {
+            goals = "clean test"
+            runnerArgs = "-Dmaven.test.failure.ignore=true"
+            mavenVersion = defaultProvidedVersion()
+        }
+    }
+
     dependencies {
-        snapshot(Application) {
+        dependency(Application) {
+            snapshot {
+            }
+
+            artifacts {
+                artifactRules = "application-*.jar"
+            }
         }
     }
 })
@@ -189,6 +318,12 @@ object Docker : BuildType({
         root(ApplicationVcs)
     }
 
+    steps {
+        script {
+            scriptContent = """echo "building Docker image" %build.number%"""
+        }
+    }
+
     dependencies {
         snapshot(TestReport) {
             reuseBuilds = ReuseBuilds.ANY
@@ -205,6 +340,10 @@ object TestApplication : BuildType({
 
             branchFilter = ""
             watchChangesInDependencies = true
+        }
+        finishBuildTrigger {
+            buildTypeExtId = "${Docker.id}"
+            branchFilter = "+:*"
         }
     }
 
