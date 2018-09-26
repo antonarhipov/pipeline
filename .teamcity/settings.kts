@@ -154,9 +154,9 @@ object Library : BuildType({
     }
 
     features {
-        merge {
-            branchFilter = "+:feature*"
-        }
+//        merge {
+//            branchFilter = "+:feature*"
+//        }
     }
 })
 
