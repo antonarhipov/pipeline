@@ -37,11 +37,12 @@ project {
     vcsRoot(LibraryVcs)
     vcsRoot(IntegrationTestsVcs)
     vcsRoot(UiTestsVcs)
-    subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 
     subProject(Live)
     subProject(Development)
     subProject(Staging)
+
+    subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
 
 object ApplicationVcs : GitVcsRoot({
@@ -51,10 +52,6 @@ object ApplicationVcs : GitVcsRoot({
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
-    authMethod = password {
-        userName = "antonarhipov"
-        password = "credentialsJSON:372bd256-7c6f-4a5b-ac95-a9b4d3505dd2"
-    }
 })
 
 object ExtTestsVcs : GitVcsRoot({
@@ -73,10 +70,6 @@ object IntegrationTestsVcs : GitVcsRoot({
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
-    authMethod = password {
-        userName = "anton"
-        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
-    }
 })
 
 object LibraryVcs : GitVcsRoot({
@@ -86,10 +79,6 @@ object LibraryVcs : GitVcsRoot({
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
-    authMethod = password {
-        userName = "anton"
-        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
-    }
 })
 
 object UiTestsVcs : GitVcsRoot({
@@ -99,22 +88,19 @@ object UiTestsVcs : GitVcsRoot({
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
-    authMethod = password {
-        userName = "anton"
-        password = "credentialsJSON:c77eb248-b6ac-41b0-8b4c-50e67d8681fc"
-    }
 })
 
 
 object Development : Project({
     name = "Development"
 
-    buildType(TestUI)
-    buildType(TestReport)
-    buildType(TestInt)
-    buildType(Application)
-    buildType(TestExt)
     buildType(Library)
+    buildType(Application)
+    buildType(TestUI)
+    buildType(TestExt)
+    buildType(TestInt)
+    buildType(TestReport)
+
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 })
 
