@@ -39,7 +39,7 @@ project {
 
     subProject(Development)
 //    subProject(staging)
-//    subProject(Live)
+    subProject(Live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
