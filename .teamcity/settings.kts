@@ -38,12 +38,13 @@ project {
     vcsRoot(UiTestsVcs)
 
     subProject(development)
-    subProject(staging)
-    subProject(live)
+//    subProject(staging)
+//    subProject(live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
 
+//region VCS roots
 object ApplicationVcs : GitVcsRoot({
     name = "ApplicationVcs"
     url = "http://localhost:3000/anton/application.git"
@@ -88,24 +89,24 @@ object UiTestsVcs : GitVcsRoot({
         +:refs/heads/(feature*)
     """.trimIndent()
 })
+//endregion
 
-
+//region development
 val development = Project {
     id("Development")
     name = "Development"
 
     buildType(Library)
     buildType(Application)
-    buildType(TestUI)
-    buildType(TestExt)
-    buildType(TestInt)
-    buildType(TestReport)
+//    buildType(TestUI)
+//    buildType(TestExt)
+//    buildType(TestInt)
+//    buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 }
 
-
-
+//region Application
 object Application : BuildType({
     name = "Application"
 
@@ -121,8 +122,6 @@ object Application : BuildType({
     steps {
         maven {
             goals = "clean package"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-            mavenVersion = defaultProvidedVersion()
         }
     }
 
@@ -137,7 +136,9 @@ object Application : BuildType({
         }
     }
 })
+//endregion
 
+//region Library
 object Library : BuildType({
     name = "Library"
 
@@ -150,18 +151,12 @@ object Library : BuildType({
     steps {
         maven {
             goals = "clean package"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-            mavenVersion = defaultProvidedVersion()
         }
     }
-
-    features {
-//        merge {
-//            branchFilter = "+:feature*"
-//        }
-    }
 })
+//endregion
 
+//region TestExt
 object TestExt : BuildType({
     name = "TestExt"
 
@@ -172,8 +167,6 @@ object TestExt : BuildType({
     steps {
         maven {
             goals = "clean test"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-            mavenVersion = defaultProvidedVersion()
         }
     }
 
@@ -188,7 +181,9 @@ object TestExt : BuildType({
         }
     }
 })
+//endregion
 
+//region TestInt
 object TestInt : BuildType({
     name = "TestInt"
 
@@ -199,8 +194,6 @@ object TestInt : BuildType({
     steps {
         maven {
             goals = "clean test"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-            mavenVersion = defaultProvidedVersion()
         }
     }
 
@@ -215,7 +208,9 @@ object TestInt : BuildType({
         }
     }
 })
+//endregion
 
+//region TestReport
 object TestReport : BuildType({
     name = "TestReport"
 
@@ -227,21 +222,19 @@ object TestReport : BuildType({
 
     triggers {
         vcs {
-            branchFilter = ""
             watchChangesInDependencies = true
         }
     }
 
     dependencies {
-        snapshot(TestExt) {
-        }
-        snapshot(TestInt) {
-        }
-        snapshot(TestUI) {
-        }
+        snapshot(TestExt) {}
+        snapshot(TestInt) {}
+        snapshot(TestUI) {}
     }
 })
+//endregion
 
+//region TestUI
 object TestUI : BuildType({
     name = "TestUI"
 
@@ -252,8 +245,6 @@ object TestUI : BuildType({
     steps {
         maven {
             goals = "clean test"
-            runnerArgs = "-Dmaven.test.failure.ignore=true"
-            mavenVersion = defaultProvidedVersion()
         }
     }
 
@@ -268,36 +259,16 @@ object TestUI : BuildType({
         }
     }
 })
+//endregion
+//endregion
 
-
-val live = Project {
-    id("Live")
-    name = "Live"
-
-    buildType(MakePublic)
-    buildTypesOrder = arrayListOf(MakePublic)
-}
-
-object MakePublic : BuildType({
-    name = "MakePublic"
-
-    enablePersonalBuilds = false
-    type = BuildTypeSettings.Type.DEPLOYMENT
-    maxRunningBuilds = 1
-
-    dependencies {
-        snapshot(TestApplication) {
-        }
-    }
-})
-
-
+//region staging
 val staging = Project {
     id("Staging")
     name = "Staging"
 
-    buildType(Docker)
-    buildType(TestApplication)
+//    buildType(Docker)
+//    buildType(TestApplication)
     buildTypesOrder = arrayListOf(Docker, TestApplication)
 }
 
@@ -342,3 +313,28 @@ object TestApplication : BuildType({
         }
     }
 })
+//endregion
+
+//region live
+val live = Project {
+    id("Live")
+    name = "Live"
+
+    buildType(MakePublic)
+    buildTypesOrder = arrayListOf(MakePublic)
+}
+
+object MakePublic : BuildType({
+    name = "MakePublic"
+
+    enablePersonalBuilds = false
+    type = BuildTypeSettings.Type.DEPLOYMENT
+    maxRunningBuilds = 1
+
+    dependencies {
+        snapshot(TestApplication) {
+        }
+    }
+})
+
+//endregion
