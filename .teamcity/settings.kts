@@ -31,17 +31,16 @@ version = "2018.1"
 
 project {
 
+    vcsRoot(LibraryVcs)
     vcsRoot(ApplicationVcs)
     vcsRoot(ExtTestsVcs)
-    vcsRoot(LibraryVcs)
     vcsRoot(IntegrationTestsVcs)
     vcsRoot(UiTestsVcs)
-
-    subProject(development)
-    subProject(staging)
-    subProject(live)
-
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
+
+    subProject(Staging)
+    subProject(Development)
+    subProject(Live)
 }
 
 object ApplicationVcs : GitVcsRoot({
@@ -90,21 +89,17 @@ object UiTestsVcs : GitVcsRoot({
 })
 
 
-val development = Project {
-    id("Development")
+object Development : Project({
     name = "Development"
 
-    buildType(Library)
-    buildType(Application)
+    buildType(TestReport)
     buildType(TestUI)
+    buildType(Library)
     buildType(TestExt)
     buildType(TestInt)
-    buildType(TestReport)
-
+    buildType(Application)
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
-}
-
-
+})
 
 object Application : BuildType({
     name = "Application"
@@ -153,12 +148,6 @@ object Library : BuildType({
             runnerArgs = "-Dmaven.test.failure.ignore=true"
             mavenVersion = defaultProvidedVersion()
         }
-    }
-
-    features {
-//        merge {
-//            branchFilter = "+:feature*"
-//        }
     }
 })
 
@@ -270,13 +259,12 @@ object TestUI : BuildType({
 })
 
 
-val live = Project {
-    id("Live")
+object Live : Project({
     name = "Live"
 
     buildType(MakePublic)
     buildTypesOrder = arrayListOf(MakePublic)
-}
+})
 
 object MakePublic : BuildType({
     name = "MakePublic"
@@ -292,14 +280,13 @@ object MakePublic : BuildType({
 })
 
 
-val staging = Project {
-    id("Staging")
+object Staging : Project({
     name = "Staging"
 
     buildType(Docker)
     buildType(TestApplication)
     buildTypesOrder = arrayListOf(Docker, TestApplication)
-}
+})
 
 object Docker : BuildType({
     name = "Docker"
