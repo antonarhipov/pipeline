@@ -97,10 +97,10 @@ object Development : Project({
 
     buildType(Library)
     buildType(Application)
-//    buildType(TestUI)
-//    buildType(TestExt)
-//    buildType(TestInt)
-//    buildType(TestReport)
+    buildType(TestUI)
+    buildType(TestExt)
+    buildType(TestInt)
+    buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 })
