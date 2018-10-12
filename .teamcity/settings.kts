@@ -1,5 +1,4 @@
 import jetbrains.buildServer.configs.kotlin.v2018_1.*
-import jetbrains.buildServer.configs.kotlin.v2018_1.buildFeatures.merge
 import jetbrains.buildServer.configs.kotlin.v2018_1.buildSteps.maven
 import jetbrains.buildServer.configs.kotlin.v2018_1.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.v2018_1.triggers.finishBuildTrigger
@@ -38,9 +37,9 @@ project {
     vcsRoot(IntegrationTestsVcs)
     vcsRoot(UiTestsVcs)
 
-    subProject(Live)
-    subProject(Development)
-    subProject(Staging)
+    subProject(development)
+    subProject(staging)
+    subProject(live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
@@ -91,7 +90,8 @@ object UiTestsVcs : GitVcsRoot({
 })
 
 
-object Development : Project({
+val development = Project {
+    id("Development")
     name = "Development"
 
     buildType(Library)
@@ -102,7 +102,9 @@ object Development : Project({
     buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
-})
+}
+
+
 
 object Application : BuildType({
     name = "Application"
@@ -268,12 +270,13 @@ object TestUI : BuildType({
 })
 
 
-object Live : Project({
+val live = Project {
+    id("Live")
     name = "Live"
 
     buildType(MakePublic)
     buildTypesOrder = arrayListOf(MakePublic)
-})
+}
 
 object MakePublic : BuildType({
     name = "MakePublic"
@@ -289,13 +292,14 @@ object MakePublic : BuildType({
 })
 
 
-object Staging : Project({
+val staging = Project {
+    id("Staging")
     name = "Staging"
 
     buildType(Docker)
     buildType(TestApplication)
     buildTypesOrder = arrayListOf(Docker, TestApplication)
-})
+}
 
 object Docker : BuildType({
     name = "Docker"
