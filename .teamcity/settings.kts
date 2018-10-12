@@ -331,7 +331,7 @@ object MakePublic : BuildType({
     maxRunningBuilds = 1
 
     dependencies {
-        snapshot(TestApplication) {
+        snapshot(TestReport) {
         }
     }
 })
