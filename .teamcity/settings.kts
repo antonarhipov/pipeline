@@ -37,7 +37,7 @@ project {
     vcsRoot(IntegrationTestsVcs)
     vcsRoot(UiTestsVcs)
 
-    subProject(development)
+    subProject(Development)
 //    subProject(staging)
 //    subProject(live)
 
@@ -92,8 +92,7 @@ object UiTestsVcs : GitVcsRoot({
 //endregion
 
 //region development
-val development = Project {
-    id("Development")
+object Development : Project({
     name = "Development"
 
     buildType(Library)
@@ -104,7 +103,7 @@ val development = Project {
 //    buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
-}
+})
 
 //region Application
 object Application : BuildType({
