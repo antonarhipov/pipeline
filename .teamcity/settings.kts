@@ -39,7 +39,7 @@ project {
 
     subProject(Development)
 //    subProject(staging)
-//    subProject(live)
+//    subProject(Live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
@@ -262,14 +262,14 @@ object TestUI : BuildType({
 //endregion
 
 //region staging
-val staging = Project {
+object Staging : Project ({
     id("Staging")
     name = "Staging"
 
 //    buildType(Docker)
 //    buildType(TestApplication)
     buildTypesOrder = arrayListOf(Docker, TestApplication)
-}
+})
 
 object Docker : BuildType({
     name = "Docker"
@@ -315,13 +315,13 @@ object TestApplication : BuildType({
 //endregion
 
 //region live
-val live = Project {
+object Live : Project ({
     id("Live")
     name = "Live"
 
     buildType(MakePublic)
     buildTypesOrder = arrayListOf(MakePublic)
-}
+})
 
 object MakePublic : BuildType({
     name = "MakePublic"
