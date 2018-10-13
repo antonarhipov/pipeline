@@ -18,7 +18,7 @@ project {
 
     subProject(Development)
 //    subProject(Staging)
-//    subProject(Live)
+    subProject(Live)
 
     //region ordering
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
@@ -313,7 +313,7 @@ object MakePublic : BuildType({
     maxRunningBuilds = 1
 
     dependencies {
-        snapshot(TestApplication) {
+        snapshot(TestReport) {
         }
     }
 })
