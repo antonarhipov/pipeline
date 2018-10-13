@@ -38,7 +38,7 @@ project {
     vcsRoot(UiTestsVcs)
 
     subProject(Development)
-//    subProject(staging)
+    subProject(Staging)
     subProject(Live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
@@ -266,8 +266,8 @@ object Staging : Project ({
     id("Staging")
     name = "Staging"
 
-//    buildType(Docker)
-//    buildType(TestApplication)
+    buildType(Docker)
+    buildType(TestApplication)
     buildTypesOrder = arrayListOf(Docker, TestApplication)
 })
 
@@ -286,7 +286,7 @@ object Docker : BuildType({
 
     dependencies {
         snapshot(TestReport) {
-            reuseBuilds = ReuseBuilds.ANY
+            reuseBuilds = ReuseBuilds.SUCCESSFUL
         }
     }
 })
@@ -303,7 +303,7 @@ object TestApplication : BuildType({
         }
         finishBuildTrigger {
             buildTypeExtId = "${Docker.id}"
-            branchFilter = "+:*"
+//            branchFilter = "+:*"
         }
     }
 
@@ -331,7 +331,7 @@ object MakePublic : BuildType({
     maxRunningBuilds = 1
 
     dependencies {
-        snapshot(TestReport) {
+        snapshot(TestApplication) {
         }
     }
 })
