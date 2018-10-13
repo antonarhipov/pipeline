@@ -5,28 +5,6 @@ import jetbrains.buildServer.configs.kotlin.v2018_1.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2018_1.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2018_1.vcs.GitVcsRoot
 
-/*
-The settings script is an entry point for defining a TeamCity
-project hierarchy. The script should contain a single call to the
-project() function with a Project instance or an init function as
-an argument.
-
-VcsRoots, BuildTypes, Templates, and subprojects can be
-registered inside the project using the vcsRoot(), buildType(),
-template(), and subProject() methods respectively.
-
-To debug settings scripts in command-line, run the
-
-    mvnDebug org.jetbrains.teamcity:teamcity-configs-maven-plugin:generate
-
-command and attach your debugger to the port 8000.
-
-To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
--> Tool Windows -> Maven Projects), find the generate task node
-(Plugins -> teamcity-configs -> teamcity-configs:generate), the
-'Debug' option is available in the context menu for the task.
-*/
-
 version = "2018.1"
 
 project {
@@ -38,8 +16,8 @@ project {
     vcsRoot(UiTestsVcs)
 
     subProject(Development)
-    subProject(Staging)
-    subProject(Live)
+//    subProject(Staging)
+//    subProject(Live)
 
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
 }
@@ -97,10 +75,10 @@ object Development : Project({
 
     buildType(Library)
     buildType(Application)
-    buildType(TestUI)
-    buildType(TestExt)
-    buildType(TestInt)
-    buildType(TestReport)
+//    buildType(TestUI)
+//    buildType(TestExt)
+//    buildType(TestInt)
+//    buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 })
@@ -209,30 +187,6 @@ object TestInt : BuildType({
 })
 //endregion
 
-//region TestReport
-object TestReport : BuildType({
-    name = "TestReport"
-
-    type = BuildTypeSettings.Type.COMPOSITE
-
-    vcs {
-        showDependenciesChanges = true
-    }
-
-    triggers {
-        vcs {
-            watchChangesInDependencies = true
-        }
-    }
-
-    dependencies {
-        snapshot(TestExt) {}
-        snapshot(TestInt) {}
-        snapshot(TestUI) {}
-    }
-})
-//endregion
-
 //region TestUI
 object TestUI : BuildType({
     name = "TestUI"
@@ -259,6 +213,31 @@ object TestUI : BuildType({
     }
 })
 //endregion
+
+//region TestReport
+object TestReport : BuildType({
+    name = "TestReport"
+
+    type = BuildTypeSettings.Type.COMPOSITE
+
+    vcs {
+        showDependenciesChanges = true
+    }
+
+    triggers {
+        vcs {
+            watchChangesInDependencies = true
+        }
+    }
+
+    dependencies {
+        snapshot(TestExt) {}
+        snapshot(TestInt) {}
+        snapshot(TestUI) {}
+    }
+})
+//endregion
+
 //endregion
 
 //region staging
@@ -303,7 +282,7 @@ object TestApplication : BuildType({
         }
         finishBuildTrigger {
             buildTypeExtId = "${Docker.id}"
-//            branchFilter = "+:*"
+            branchFilter = "+:*"
         }
     }
 
