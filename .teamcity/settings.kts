@@ -8,7 +8,7 @@ import jetbrains.buildServer.configs.kotlin.v2018_1.vcs.GitVcsRoot
 version = "2018.1"
 
 project {
-    //region root
+    //region roots
     vcsRoot(ApplicationVcs)
     vcsRoot(ExtTestsVcs)
     vcsRoot(LibraryVcs)
@@ -18,7 +18,7 @@ project {
 
     subProject(Development)
 //    subProject(Staging)
-    subProject(Live)
+//    subProject(Live)
 
     //region ordering
     subProjectsOrder = arrayListOf(RelativeId("Development"), RelativeId("Staging"), RelativeId("Live"))
@@ -78,10 +78,10 @@ object Development : Project({
 
     buildType(Library)
     buildType(Application)
-    buildType(TestUI)
-    buildType(TestExt)
-    buildType(TestInt)
-    buildType(TestReport)
+//    buildType(TestUI)
+//    buildType(TestExt)
+//    buildType(TestInt)
+//    buildType(TestReport)
 
     buildTypesOrder = arrayListOf(Library, Application, TestUI, TestExt, TestInt, TestReport)
 })
