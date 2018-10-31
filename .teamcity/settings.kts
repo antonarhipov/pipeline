@@ -278,7 +278,7 @@ object TestApplication : BuildType({
 
     triggers {
         vcs {
-//            triggerRules = "+:root=${ApplicationVcs.id}:Dockerfile"
+            triggerRules = "+:root=${ApplicationVcs.id}:Dockerfile"
 
             branchFilter = ""
             watchChangesInDependencies = true
