@@ -51,11 +51,14 @@ object IntegrationTestsVcs : GitVcsRoot({
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
+    authMethod = password {
+        password = "credentialsJSON:6b64bc6e-bd7d-4132-9e75-3774c8090125"
+    }
 })
 
 object LibraryVcs : GitVcsRoot({
     name = "LibraryVcs"
-    url = "http://localhost:3000/anton/library.git"
+    url = "https://github.com/antonarhipov/lib.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
@@ -108,6 +111,7 @@ object Application : BuildType({
     dependencies {
         dependency(Library) {
             snapshot {
+
             }
 
             artifacts {
