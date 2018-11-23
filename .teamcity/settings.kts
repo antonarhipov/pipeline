@@ -58,7 +58,7 @@ object IntegrationTestsVcs : GitVcsRoot({
 
 object LibraryVcs : GitVcsRoot({
     name = "LibraryVcs"
-    url = "https://github.com/antonarhipov/lib.git"
+    url = "http://localhost:3000/anton/library.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
