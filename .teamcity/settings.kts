@@ -10,7 +10,6 @@ version = "2018.1"
 project {
     //region roots
     vcsRoot(ApplicationVcs)
-    vcsRoot(ExtTestsVcs)
     vcsRoot(LibraryVcs)
     vcsRoot(IntegrationTestsVcs)
     vcsRoot(UiTestsVcs)
@@ -28,16 +27,7 @@ project {
 //region VCS roots
 object ApplicationVcs : GitVcsRoot({
     name = "ApplicationVcs"
-    url = "http://localhost:3000/anton/application.git"
-    branchSpec = """
-        +:refs/heads/(master)
-        +:refs/heads/(feature*)
-    """.trimIndent()
-})
-
-object ExtTestsVcs : GitVcsRoot({
-    name = "ExtTestsVcs"
-    url = "http://localhost:3000/anton/extra-tests.git"
+    url = "https://github.com/antonarhipov/pipeline-application.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
@@ -46,19 +36,16 @@ object ExtTestsVcs : GitVcsRoot({
 
 object IntegrationTestsVcs : GitVcsRoot({
     name = "IntegrationTestsVcs"
-    url = "http://localhost:3000/anton/integration-tests.git"
+    url = "https://github.com/antonarhipov/pipeline-integration-tests.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
     """.trimIndent()
-    authMethod = password {
-        password = "credentialsJSON:6b64bc6e-bd7d-4132-9e75-3774c8090125"
-    }
 })
 
 object LibraryVcs : GitVcsRoot({
     name = "LibraryVcs"
-    url = "http://localhost:3000/anton/library.git"
+    url = "https://github.com/antonarhipov/pipeline-library.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
@@ -67,7 +54,7 @@ object LibraryVcs : GitVcsRoot({
 
 object UiTestsVcs : GitVcsRoot({
     name = "UiTestsVcs"
-    url = "http://localhost:3000/anton/ui-tests.git"
+    url = "https://github.com/antonarhipov/pipeline-ui-tests.git"
     branchSpec = """
         +:refs/heads/(master)
         +:refs/heads/(feature*)
@@ -140,32 +127,6 @@ object Library : BuildType({
 })
 //endregion
 
-//region TestExt
-object TestExt : BuildType({
-    name = "TestExt"
-
-    vcs {
-        root(ExtTestsVcs)
-    }
-
-    steps {
-        maven {
-            goals = "clean test"
-        }
-    }
-
-    dependencies {
-        dependency(Application) {
-            snapshot {
-            }
-
-            artifacts {
-                artifactRules = "application-*.jar"
-            }
-        }
-    }
-})
-//endregion
 
 //region TestInt
 object TestInt : BuildType({
@@ -238,7 +199,6 @@ object TestReport : BuildType({
     }
 
     dependencies {
-        snapshot(TestExt) {}
         snapshot(TestInt) {}
         snapshot(TestUI) {}
     }
